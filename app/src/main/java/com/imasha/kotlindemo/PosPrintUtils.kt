@@ -1,9 +1,7 @@
 package com.imasha.kotlindemo
 
 import android.app.Activity
-import android.graphics.BitmapFactory
 import android.os.Handler
-import android.os.RemoteException
 import com.nexgo.oaf.apiv3.device.printer.*
 
 
@@ -41,91 +39,76 @@ class PosPrintUtils (activity: Activity, printer: Printer?, handler: Handler) {
     private val ERROR_PAPERENDED = 240
 
 
-    /*private fun printHeader(refNo: String?, tranId: String, invoiceNo: String?, isReport: Boolean) {
+    private fun printHeader() {
         mPrinter?.initPrinter()
 
-        val bitmap = BitmapFactory.decodeResource(PosPrintUtils.context.getResources(), R.drawable.ndb2)
-        mPrinter?.appendImage(bitmap, AlignEnum.CENTER)
+        //val bitmap = BitmapFactory.decodeResource(PosPrintUtils.context.getResources(), R.drawable.ndb2)
+        //mPrinter?.appendImage(bitmap, AlignEnum.CENTER)
 
-        mPrinter?.appendPrnStr(PosPrintUtils.addressLine1, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
-        mPrinter?.appendPrnStr(PosPrintUtils.addressLine2, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
-        mPrinter?.appendPrnStr(PosPrintUtils.addressLine3, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
-        mPrinter?.appendPrnStr(PosPrintUtils.hotlineNo, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
+        mPrinter?.appendPrnStr("No. 1, Smart Bank,", FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
+        mPrinter?.appendPrnStr("Colombo 1.", FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
+        mPrinter?.appendPrnStr("Sri Lanka,", FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
+        mPrinter?.appendPrnStr("0111234544", FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
 
         mPrinter?.appendPrnStr("\n", FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
 
-        mPrinter?.appendPrnStr(PosPrintUtils.lblDateTime, PosPrintUtils.date, FONT_SIZE_NORMAL, false)
-        mPrinter?.appendPrnStr(PosPrintUtils.lblAgentId, PosPrintUtils.mID, FONT_SIZE_NORMAL, false)
-        mPrinter?.appendPrnStr(PosPrintUtils.lblTerminalId, PosPrintUtils.tID, FONT_SIZE_NORMAL, false
-        )
-        if (!isReport) {
-            mPrinter?.appendPrnStr(PosPrintUtils.lblAgentUserName, PosPrintUtils.mAgentName, FONT_SIZE_NORMAL, false)
-            mPrinter?.appendPrnStr(PosPrintUtils.lblInvoiceNo, invoiceNo ?: " -- ", FONT_SIZE_NORMAL, false)
-            mPrinter?.appendPrnStr(PosPrintUtils.lblFtRefNo, refNo ?: " " + "-- ", FONT_SIZE_NORMAL, false)
-            mPrinter?.appendPrnStr(PosPrintUtils.lblTranStatus, "Success", FONT_SIZE_NORMAL, false)
-        } else {
-            mPrinter?.appendPrnStr(PosPrintUtils.lblBatchId, PosPrintUtils.batchId, FONT_SIZE_NORMAL, false)
-            mPrinter?.appendPrnStr(PosPrintUtils.lblAgentUserName, PosPrintUtils.mAgentName, FONT_SIZE_NORMAL, false)
-            mPrinter?.appendPrnStr(PosPrintUtils.lblAgentUserMobile, PosPrintUtils.mAgentMobNo, FONT_SIZE_NORMAL, false)
-        }
+        mPrinter?.appendPrnStr("Date & Time", "17/07/2023", FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Merchant/Branch ID", "00000001", FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Terminal ID", "000003", FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Batch ID", "745", FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Trace Number", "898765", FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Agent", "imasha", FONT_SIZE_NORMAL, false)
     }
 
-    fun printCashWithdraw(title: String?, bean: WithdrawalBean, isCusCopy: Boolean) {
-        printHeader(bean.getInquiryDataBean().getReferenceNo(), bean.getInquiryDataBean().getTransID(), bean.getInquiryDataBean().getInvoiceNo(), false)
+    fun printCashWithdraw(title: String?, isCusCopy: Boolean) {
+        printHeader()
 
         mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
         mPrinter?.appendPrnStr(title, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
         mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
 
-        mPrinter?.appendPrnStr(PosPrintUtils.accountNumber, bean.getAccountListItem().getAccountNumber(), FONT_SIZE_NORMAL, false)
-
-        val holderName: String = bean.getInquiryDataBean().getAccHolderName()
-        val maxLineLength = 15
-
-        if (holderName.length <= maxLineLength) {
-            mPrinter?.appendPrnStr(PosPrintUtils.accHolderName, holderName, FONT_SIZE_NORMAL, false)
-        } else {
-            val firstLine = holderName.substring(0, maxLineLength)
-            val secondLine = holderName.substring(maxLineLength)
-
-            mPrinter?.appendPrnStr(PosPrintUtils.accHolderName, firstLine, FONT_SIZE_NORMAL, false)
-            mPrinter?.appendPrnStr(secondLine, fontNormal, AlignEnum.RIGHT)
-        }
-
-        mPrinter?.appendPrnStr(PosPrintUtils.remark, if (bean.getRemark().isEmpty()) " -- " else bean.getRemark(), FONT_SIZE_NORMAL, false)
-        mPrinter?.appendPrnStr(PosPrintUtils.withdrawalAmount, formatterUtil.setFormattedAmount(bean.getAmount()), FONT_SIZE_NORMAL, false)
-        mPrinter?.appendPrnStr(PosPrintUtils.serviceCharge, formatterUtil.setFormattedAmount(bean.getInquiryDataBean().getServiceChargeAmount()), FONT_SIZE_NORMAL, false)
-        mPrinter?.appendPrnStr(PosPrintUtils.totalAmount, formatterUtil.setFormattedAmount(bean.getTotalAmount()), FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("A/C Number", "67654345", FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("A/C Name", "Imasha Senarath", FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Withdrawal Amount", "Rs. 1000.00", FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Convenience Fee", "Rs. 10.00", FONT_SIZE_NORMAL, false)
 
         mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        mPrinter?.appendPrnStr("Transaction Amount", "Rs. 1010.00", FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
 
-        if (isCusCopy) printBottomTextCus(true)
-        else printBottomTextAgent(true)
+        if (isCusCopy) printBottomTextCus()
+        else printBottomTextAgent()
     }
 
-    private fun printBottomTextCus(showOtpVerified: Boolean) {
+    private fun printBottomTextCus() {
         mPrinter?.appendPrnStr("\n\n", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
 
-        if (showOtpVerified) {
-            mPrinter?.appendPrnStr(PosPrintUtils.otpVerified, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
-        }
-
-        mPrinter?.appendPrnStr(PosPrintUtils.customerCopy, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
-        mPrinter?.appendPrnStr(PosPrintUtils.thankYou, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
-        mPrinter?.appendPrnStr(PosPrintUtils.furtherDetails1, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
-        mPrinter?.appendPrnStr(PosPrintUtils.furtherDetails2, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
-
+        mPrinter?.appendPrnStr("Customer Copy", FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
+        mPrinter?.appendPrnStr("\n", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        mPrinter?.appendPrnStr("***** Thank You...*****", FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
         mPrinter?.appendPrnStr("\n\n\n\n\n\n", FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
 
         mPrinter?.startPrint(false,
-            OnPrintListener { retCode: Int ->
-                mActivity?.runOnUiThread(Runnable {
-                    printStatus(
-                        retCode
-                    )
+            OnPrintListener { retCode: Int -> mActivity?.runOnUiThread(Runnable {
+                    printStatus(retCode)
                 })
             })
-    }*/
+    }
+
+    private fun printBottomTextAgent() {
+        mPrinter?.appendPrnStr("\n\n", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+
+        mPrinter?.appendPrnStr("Agent Copy", FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
+        mPrinter?.appendPrnStr("\n", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        mPrinter?.appendPrnStr("***** Thank You...*****", FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
+        mPrinter?.appendPrnStr("\n\n\n\n\n\n", FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
+
+        mPrinter?.startPrint(false,
+            OnPrintListener { retCode: Int -> mActivity?.runOnUiThread(Runnable {
+                    printStatus(retCode)
+                })
+            })
+    }
 
     //TEST
     fun printTest(title: String?) {
