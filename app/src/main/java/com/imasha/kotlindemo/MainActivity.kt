@@ -7,8 +7,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.imasha.kotlindemo.model.HeaderModel
-import com.imasha.kotlindemo.model.WithdrawalModel
+import com.imasha.kotlindemo.model.*
 import com.imasha.kotlindemo.print.NexgoPrintUtils
 import com.nexgo.oaf.apiv3.APIProxy
 import com.nexgo.oaf.apiv3.DeviceEngine
@@ -18,24 +17,6 @@ class MainActivity : AppCompatActivity() {
 
     private var deviceEngine: DeviceEngine? = null
     private var printer: Printer? = null
-
-    /*@SuppressLint("HandlerLeak")
-    private val handler: Handler = object : Handler() {
-        override fun handleMessage(msg: Message) {
-            when (msg.what) {
-                PRINT_FAILED -> {
-                    val error = msg.obj as String
-                    isPrinted = false
-                    Log.i("test66", "Faild")
-                }
-                PRINT_SUCCESS -> {
-                    isPrinted = true
-                    Log.i("test66", "Success")
-                }
-                else -> {}
-            }
-        }
-    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,14 +32,18 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Printing...", Toast.LENGTH_SHORT).show()
 
                 val headerModel = HeaderModel("17/07/2023", "000001", "00001", "787", "89876t6", "imasha")
-                val withdrawalModel = WithdrawalModel("Cash Withdrawal", "78765", "Imasha Semarath", "Rs. 1000.00", "Rs. 1000.00", "Rs. 10.00")
+                val billPaymentModel = BillPaymentModel("Utility Bill Payment Account", "Cash", "6756546", "Imasha Senarath", "Telephone", "Mobitel", "Tel No", "077675654", "Rs. 1000", "Rs. 10.00", "Rs. 1010.00")
+                val balanceInquiryModel = BalanceInquiryModel("Balance Inquiry", "7876533", "Youth Saving", "Imasha Semarath", "Rs. 1000.00")
+                val withdrawalModel = WithdrawalModel("Cash Withdrawal", "7876553", "Imasha Senarath", "Rs. 1000.00", "Rs. 1000.00", "Rs. 10.00")
+                val statementModel = StatementModel("Statement Request", "78765", "Imasha Senarath", "01/07/2023", "01/09/2023", "Branch", "Matara")
+                val fundTransferModel = FundTransferModel("Other Bank Fund Transfer", "787659", "Imasha Senarath", "76567876", "Imasha", "BOC", "Matara", "OTHER_BANK", "Test", "Rs. 1000.00","10.00","Rs. 1010.00")
 
                 NexgoPrintUtils(this, printer, object: NexgoPrintUtils.OnPrintCompleteTask {
                     override fun onPrintCompleted(isSuccess: Boolean, msg: String) {
                         Log.i("test66", "isSuccess: $isSuccess")
                         Log.i("test66", "msg: $msg")
                     }
-                }).printCashWithdraw(headerModel, withdrawalModel, true);
+                }).printFundTransfer(headerModel, fundTransferModel, true);
             }
         }
     }
