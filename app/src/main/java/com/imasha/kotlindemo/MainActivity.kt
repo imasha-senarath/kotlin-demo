@@ -37,13 +37,20 @@ class MainActivity : AppCompatActivity() {
                 val withdrawalModel = WithdrawalModel("Cash Withdrawal", "7876553", "Imasha Senarath", "Rs. 1000.00", "Rs. 1000.00", "Rs. 10.00")
                 val statementModel = StatementModel("Statement Request", "78765", "Imasha Senarath", "01/07/2023", "01/09/2023", "Branch", "Matara")
                 val fundTransferModel = FundTransferModel("Other Bank Fund Transfer", "787659", "Imasha Senarath", "76567876", "Imasha", "BOC", "Matara", "OTHER_BANK", "Test", "Rs. 1000.00","10.00","Rs. 1010.00")
+                val depositModel = DepositModel("Cash Deposit", "787659", "Imasha Senarath", "970676567V", "077654565", "test", "Rs. 2000.00", "Rs. 20.00", "Rs. 2020.00")
+                val saleModel = SaleModel("Sale Receipt", "787659", "Imasha Senarath", "Imasha", "Sale", "Rs. 500.00", "Rs. 10.00", "Rs. 510.00")
+                val voidModel = VoidModel("Void Transaction", "Cash Withdrawal", "17/07/2023", "787654","Rs. 2000.00")
+                val stopPaymentModel = StopPaymentModel("Card Stop Payment", "787659", "Imasha Senarath", "Card","764673", "Test", "Tangalle")
+                val leadModel = LeadModel("Lead Request", "Leasing", "Imasha Senarath", "879654346V","Matara")
+                val chequeBookRequestModel = ChequeBookRequestModel("Cheque Book Request", "787659", "Imasha Senarath", "3","25 CR NOOR", "Hikkaduwa")
+                val cardPaymentModel = CardPaymentModel("Card Settlement by Cash", "7876775794659", "7864357", "Imasha Senarath","Rs. 500.00", "Rs. 30.00", "RS. 530.00")
 
                 NexgoPrintUtils(this, printer, object: NexgoPrintUtils.OnPrintCompleteTask {
                     override fun onPrintCompleted(isSuccess: Boolean, msg: String) {
                         Log.i("test66", "isSuccess: $isSuccess")
                         Log.i("test66", "msg: $msg")
                     }
-                }).printFundTransfer(headerModel, fundTransferModel, true);
+                }).printCashCardSettlement(headerModel, cardPaymentModel, true);
             }
         }
     }

@@ -1,8 +1,7 @@
 package com.imasha.kotlindemo.print
 
 import android.app.Activity
-import android.graphics.BitmapFactory
-import com.imasha.kotlindemo.R
+import android.graphics.Paint
 import com.imasha.kotlindemo.model.*
 import com.nexgo.oaf.apiv3.device.printer.*
 
@@ -43,8 +42,8 @@ class NexgoPrintUtils (activity: Activity, printer: Printer?, onPrintCompleteTas
     private fun printHeader(headerModel: HeaderModel) {
         mPrinter?.initPrinter()
 
-        val bitmap = BitmapFactory.decodeResource(mActivity?.applicationContext?.resources, R.drawable.ndb2)
-        mPrinter?.appendImage(bitmap, AlignEnum.CENTER)
+        //val bitmap = BitmapFactory.decodeResource(mActivity?.applicationContext?.resources, R.drawable.ndb2)
+        //mPrinter?.appendImage(bitmap, AlignEnum.CENTER)
 
         mPrinter?.appendPrnStr("No. 1, Smart Bank,", FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
         mPrinter?.appendPrnStr("Colombo 1.", FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
@@ -129,7 +128,7 @@ class NexgoPrintUtils (activity: Activity, printer: Printer?, onPrintCompleteTas
         else printBottomTextAgent()
     }
 
-    fun printCashWithdrawal(headerModel: HeaderModel, withdrawalModel: WithdrawalModel, isCusCopy: Boolean) {
+    fun printCashWithdrawal(headerModel: HeaderModel, withdrawalModel: WithdrawalModel, isCusCopy: Boolean?) {
         printHeader(headerModel)
 
         mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
@@ -145,7 +144,7 @@ class NexgoPrintUtils (activity: Activity, printer: Printer?, onPrintCompleteTas
         mPrinter?.appendPrnStr("Transaction Amount", withdrawalModel.transactionAmount, FONT_SIZE_NORMAL, false)
         mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
 
-        if (isCusCopy) printBottomTextCus()
+        if (isCusCopy == true) printBottomTextCus()
         else printBottomTextAgent()
     }
 
@@ -196,6 +195,206 @@ class NexgoPrintUtils (activity: Activity, printer: Printer?, onPrintCompleteTas
         if (isCusCopy) printBottomTextCus()
         else printBottomTextAgent()
     }
+
+    fun printDeposit(headerModel: HeaderModel, depositModel: DepositModel, isCusCopy: Boolean) {
+        printHeader(headerModel)
+
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        mPrinter?.appendPrnStr(depositModel.title, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+
+        mPrinter?.appendPrnStr("A/C Number", depositModel.accNumber, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("A/C Name", depositModel.accName, FONT_SIZE_NORMAL, false)
+
+        if (isCusCopy){
+            mPrinter?.appendPrnStr("NIC Number", depositModel.nic, FONT_SIZE_NORMAL, false)
+            mPrinter?.appendPrnStr("Mobile Number", depositModel.mobile, FONT_SIZE_NORMAL, false)
+            mPrinter?.appendPrnStr("Remark", depositModel.remark, FONT_SIZE_NORMAL, false)
+        }
+
+        mPrinter?.appendPrnStr("Amount", depositModel.amount, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Service Charge", depositModel.convenienceFee, FONT_SIZE_NORMAL, false)
+
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        mPrinter?.appendPrnStr("Transaction Amount", depositModel.transactionAmount, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+
+        if (isCusCopy) printBottomTextCus()
+        else printBottomTextAgent()
+    }
+
+    fun printSale(headerModel: HeaderModel, saleModel: SaleModel, isCusCopy: Boolean) {
+        printHeader(headerModel)
+
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        mPrinter?.appendPrnStr(saleModel.title, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+
+        if (isCusCopy){
+            mPrinter?.appendPrnStr("A/C Number", saleModel.accNumber, FONT_SIZE_NORMAL, false)
+            mPrinter?.appendPrnStr("A/C Name", saleModel.accName, FONT_SIZE_NORMAL, false)
+        } else {
+            mPrinter?.appendPrnStr("Customer A/C Number", saleModel.accNumber, FONT_SIZE_NORMAL, false)
+            mPrinter?.appendPrnStr("Customer A/C Name", saleModel.accName, FONT_SIZE_NORMAL, false)
+        }
+
+        mPrinter?.appendPrnStr("Sales Outlet", saleModel.salesOutlet, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Remark", saleModel.remark, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Sale Amount", saleModel.amount, FONT_SIZE_NORMAL, false)
+
+        mPrinter?.appendPrnStr("Convenience Fee", saleModel.convenienceFee, FONT_SIZE_NORMAL, false)
+
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        mPrinter?.appendPrnStr("Transaction Amount", saleModel.transactionAmount, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+
+        if (isCusCopy) printBottomTextCus()
+        else printBottomTextAgent()
+    }
+
+    fun printVoid(headerModel: HeaderModel, voidModel: VoidModel, isCusCopy: Boolean) {
+        printHeader(headerModel)
+
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        mPrinter?.appendPrnStr(voidModel.title, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+
+        mPrinter?.appendPrnStr("Tran. Type", voidModel.type, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Tran. Date and Time", voidModel.date, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Original Trace ID", voidModel.traceNo, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Transaction Amount", voidModel.transactionAmount, FONT_SIZE_NORMAL, false)
+
+        if (isCusCopy) printBottomTextCus()
+        else printBottomTextAgent()
+    }
+
+    fun printStopPayment(headerModel: HeaderModel, stopPaymentModel: StopPaymentModel, isCusCopy: Boolean) {
+        printHeader(headerModel)
+
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        mPrinter?.appendPrnStr(stopPaymentModel.title, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+
+        mPrinter?.appendPrnStr("A/C Number", stopPaymentModel.accNumber, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("A/C Name", stopPaymentModel.accName, FONT_SIZE_NORMAL, false)
+
+        if(stopPaymentModel.paymentType.equals("Cheque")) {
+            mPrinter?.appendPrnStr("Cheque Number", stopPaymentModel.refNo, FONT_SIZE_NORMAL, false)
+        } else {
+            mPrinter?.appendPrnStr("Card Number", stopPaymentModel.refNo, FONT_SIZE_NORMAL, false)
+        }
+
+        mPrinter?.appendPrnStr("Remark", stopPaymentModel.remark, FONT_SIZE_NORMAL, false)
+
+        if(stopPaymentModel.paymentType.equals("Cheque")) {
+            mPrinter?.appendPrnStr("Branch", stopPaymentModel.branch, FONT_SIZE_NORMAL, false)
+        }
+
+        if (isCusCopy) printBottomTextCus()
+        else printBottomTextAgent()
+    }
+
+    fun printLead(headerModel: HeaderModel, leadModel: LeadModel, isCusCopy: Boolean) {
+        printHeader(headerModel)
+
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        mPrinter?.appendPrnStr(leadModel.title, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+
+        mPrinter?.appendPrnStr("Type", leadModel.type, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Customer Name", leadModel.cusName, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("NIC No", leadModel.nic, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Branch", leadModel.branch, FONT_SIZE_NORMAL, false)
+
+        if (isCusCopy) printBottomTextCus()
+        else printBottomTextAgent()
+    }
+
+    fun printChequeBookRequest(headerModel: HeaderModel, chequeBookRequestModel: ChequeBookRequestModel, isCusCopy: Boolean) {
+        printHeader(headerModel)
+
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        mPrinter?.appendPrnStr(chequeBookRequestModel.title, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+
+        mPrinter?.appendPrnStr("A/C Number", chequeBookRequestModel.accNumber, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("A/C Name", chequeBookRequestModel.accName, FONT_SIZE_NORMAL, false)
+
+
+        mPrinter?.appendPrnStr("Quantity", chequeBookRequestModel.quantity, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Page Count", chequeBookRequestModel.pageCount, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Collecting Branch", chequeBookRequestModel.collectingBranch, FONT_SIZE_NORMAL, false)
+
+        if (isCusCopy) printBottomTextCus()
+        else printBottomTextAgent()
+    }
+
+    fun printAccountCardSettlement(headerModel: HeaderModel, cardPaymentModel: CardPaymentModel, isCusCopy: Boolean) {
+        printHeader(headerModel)
+
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        mPrinter?.appendPrnStr(cardPaymentModel.title, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+
+        mPrinter?.appendPrnStr("Credit Card Number", cardPaymentModel.cardNumber, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("A/C Number", cardPaymentModel.accNumber, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("A/C Name", cardPaymentModel.accName, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Settlement Amount", cardPaymentModel.amount, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Convenience Fee", cardPaymentModel.convenienceFee, FONT_SIZE_NORMAL, false)
+
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        mPrinter?.appendPrnStr("Transaction Amount", cardPaymentModel.transactionAmount, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+
+        if (isCusCopy) printBottomTextCus()
+        else printBottomTextAgent()
+    }
+
+    fun printCashCardSettlement(headerModel: HeaderModel, cardPaymentModel: CardPaymentModel, isCusCopy: Boolean) {
+        printHeader(headerModel)
+
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        mPrinter?.appendPrnStr(cardPaymentModel.title, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+
+        mPrinter?.appendPrnStr("Credit Card Number", cardPaymentModel.cardNumber, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Settlement Amount", cardPaymentModel.amount, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Convenience Fee", cardPaymentModel.convenienceFee, FONT_SIZE_NORMAL, false)
+
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        mPrinter?.appendPrnStr("Transaction Amount", cardPaymentModel.transactionAmount, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+
+        if (isCusCopy) printBottomTextCus()
+        else printBottomTextAgent()
+    }
+
+    /*fun printMiniStatement(headerModel: HeaderModel, miniStatementModel: MiniStatementModel, isCusCopy: Boolean) {
+        printHeader(headerModel)
+
+        var i = 0;
+
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        mPrinter?.appendPrnStr(miniStatementModel.title, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+
+        mPrinter?.appendPrnStr("A/C Number", miniStatementModel.accNumber, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("A/C Name", miniStatementModel.accName, FONT_SIZE_NORMAL, false)
+
+        if (isCusCopy) {
+            for (bean in transList) {
+                val numb: String = (++i).toString()
+                mPrinter?.appendPrnStr(numb + ") " + bean.getTransName(), FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+                mPrinter?.appendPrnStr(bean.getTransType(), bean.getAmount(), FONT_SIZE_NORMAL, false)
+                mPrinter?.appendPrnStr(bean.getDateTime(), bean.getBalance(), FONT_SIZE_NORMAL, false)
+                mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+                mPrinter?.appendPrnStr("\n", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+            }
+        }
+
+        if (isCusCopy) printBottomTextCus()
+        else printBottomTextAgent()
+    }*/
 
     private fun printBottomTextCus() {
         mPrinter?.appendPrnStr("\n\n", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
