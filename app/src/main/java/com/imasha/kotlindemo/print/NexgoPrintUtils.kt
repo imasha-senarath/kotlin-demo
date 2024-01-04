@@ -1,9 +1,10 @@
 package com.imasha.kotlindemo.print
 
 import android.app.Activity
-import android.graphics.Paint
+import android.graphics.Bitmap
 import com.imasha.kotlindemo.model.*
-import com.nexgo.oaf.apiv3.device.printer.*
+import com.nexgo.oaf.apiv3.device.printer.AlignEnum
+import com.nexgo.oaf.apiv3.device.printer.Printer
 
 
 class NexgoPrintUtils (activity: Activity, printer: Printer?, onPrintCompleteTask : OnPrintCompleteTask) {
@@ -12,13 +13,7 @@ class NexgoPrintUtils (activity: Activity, printer: Printer?, onPrintCompleteTas
     var mPrinter: Printer? = printer
     var mOnPrintCompleteTask: OnPrintCompleteTask? = onPrintCompleteTask
 
-    private val FONT_SIZE_SMALL = 20
     private val FONT_SIZE_NORMAL = 24
-    private val FONT_SIZE_BIG = 24
-    private val fontSmall = FontEntity(DotMatrixFontEnum.CH_SONG_20X20, DotMatrixFontEnum.ASC_SONG_8X16)
-    private val fontNormal = FontEntity(DotMatrixFontEnum.CH_SONG_24X24, DotMatrixFontEnum.ASC_SONG_12X24)
-    private val fontBold = FontEntity(DotMatrixFontEnum.CH_SONG_24X24, DotMatrixFontEnum.ASC_SONG_BOLD_16X24)
-    private val fontBig = FontEntity(DotMatrixFontEnum.CH_SONG_24X24, DotMatrixFontEnum.ASC_SONG_12X24, false, true)
 
     val Printer_Success = 0
     val Printer_Base_Error = -1000
@@ -37,6 +32,23 @@ class NexgoPrintUtils (activity: Activity, printer: Printer?, onPrintCompleteTas
 
     interface OnPrintCompleteTask {
         fun onPrintCompleted(isSuccess: Boolean, msg: String)
+    }
+
+    fun printReceipt(receipt: Bitmap?) {
+        if(receipt != null) {
+            mPrinter?.initPrinter()
+
+            mPrinter?.appendImage(receipt, AlignEnum.CENTER)
+            mPrinter?.appendPrnStr("\n\n\n\n\n\n", FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
+
+            mPrinter?.startPrint(false) { retCode: Int ->
+                mActivity?.runOnUiThread {
+                    printStatus(retCode)
+                }
+            }
+        } else {
+            printStatus(Printer_AddImg_Fail)
+        }
     }
 
     private fun printHeader(headerModel: HeaderModel) {
@@ -303,6 +315,7 @@ class NexgoPrintUtils (activity: Activity, printer: Printer?, onPrintCompleteTas
 
         mPrinter?.appendPrnStr("Type", leadModel.type, FONT_SIZE_NORMAL, false)
         mPrinter?.appendPrnStr("Customer Name", leadModel.cusName, FONT_SIZE_NORMAL, false)
+        //printLongText("Customer Name", leadModel.cusName, mPrinter)
         mPrinter?.appendPrnStr("NIC No", leadModel.nic, FONT_SIZE_NORMAL, false)
         mPrinter?.appendPrnStr("Branch", leadModel.branch, FONT_SIZE_NORMAL, false)
 
@@ -319,7 +332,6 @@ class NexgoPrintUtils (activity: Activity, printer: Printer?, onPrintCompleteTas
 
         mPrinter?.appendPrnStr("A/C Number", chequeBookRequestModel.accNumber, FONT_SIZE_NORMAL, false)
         mPrinter?.appendPrnStr("A/C Name", chequeBookRequestModel.accName, FONT_SIZE_NORMAL, false)
-
 
         mPrinter?.appendPrnStr("Quantity", chequeBookRequestModel.quantity, FONT_SIZE_NORMAL, false)
         mPrinter?.appendPrnStr("Page Count", chequeBookRequestModel.pageCount, FONT_SIZE_NORMAL, false)
@@ -369,7 +381,7 @@ class NexgoPrintUtils (activity: Activity, printer: Printer?, onPrintCompleteTas
         else printBottomTextAgent()
     }
 
-    /*fun printMiniStatement(headerModel: HeaderModel, miniStatementModel: MiniStatementModel, isCusCopy: Boolean) {
+    fun printMiniStatement(headerModel: HeaderModel, miniStatementModel: MiniStatementModel, isCusCopy: Boolean) {
         printHeader(headerModel)
 
         var i = 0;
@@ -380,13 +392,14 @@ class NexgoPrintUtils (activity: Activity, printer: Printer?, onPrintCompleteTas
 
         mPrinter?.appendPrnStr("A/C Number", miniStatementModel.accNumber, FONT_SIZE_NORMAL, false)
         mPrinter?.appendPrnStr("A/C Name", miniStatementModel.accName, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("\n", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
 
         if (isCusCopy) {
-            for (bean in transList) {
-                val numb: String = (++i).toString()
-                mPrinter?.appendPrnStr(numb + ") " + bean.getTransName(), FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
-                mPrinter?.appendPrnStr(bean.getTransType(), bean.getAmount(), FONT_SIZE_NORMAL, false)
-                mPrinter?.appendPrnStr(bean.getDateTime(), bean.getBalance(), FONT_SIZE_NORMAL, false)
+            for ((i, bean) in miniStatementModel.transactionList.withIndex()) {
+                val numb: String = (i + 1).toString()
+                mPrinter?.appendPrnStr(numb + ") " + bean.transName, FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+                mPrinter?.appendPrnStr(bean.transType, bean.amount, FONT_SIZE_NORMAL, false)
+                mPrinter?.appendPrnStr(bean.dateTime, bean.balance, FONT_SIZE_NORMAL, false)
                 mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
                 mPrinter?.appendPrnStr("\n", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
             }
@@ -394,7 +407,85 @@ class NexgoPrintUtils (activity: Activity, printer: Printer?, onPrintCompleteTas
 
         if (isCusCopy) printBottomTextCus()
         else printBottomTextAgent()
-    }*/
+    }
+
+    fun printTransactionHistory (headerModel: HeaderModel, historyModel: HistoryModel) {
+        printHeader(headerModel)
+
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        mPrinter?.appendPrnStr(historyModel.title, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+
+        for ((i, bean) in historyModel.transactionList.withIndex()) {
+            val numb: String = (i + 1).toString()
+
+            if (bean.status.equals("TVOD")) {
+                mPrinter?.appendPrnStr(numb + ") " + bean.transactionType + " (VOID)", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+            } else {
+                mPrinter?.appendPrnStr(numb + ") " + bean.transactionType, FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+            }
+
+            if (!bean.amount.equals("0")) {
+                mPrinter?.appendPrnStr("Amount", bean.amount, FONT_SIZE_NORMAL, false)
+            }
+
+            if (!bean.serviceCharge.equals("0")) {
+                mPrinter?.appendPrnStr("Convenience Fee", bean.serviceCharge, FONT_SIZE_NORMAL, false)
+            }
+
+            if (!bean.from.equals("")) {
+                mPrinter?.appendPrnStr("From ", bean.from, FONT_SIZE_NORMAL, false)
+            }
+
+            if (!bean.to.equals("")) {
+                mPrinter?.appendPrnStr("To", bean.to, FONT_SIZE_NORMAL, false)
+            }
+
+            if (!bean.org_traceNo.equals("")) {
+                mPrinter?.appendPrnStr("Org.Trace No", bean.org_traceNo, FONT_SIZE_NORMAL, false)
+            }
+
+            mPrinter?.appendPrnStr("Tran ID", bean.traceNo, FONT_SIZE_NORMAL, false)
+            mPrinter?.appendPrnStr("Date & Time", bean.date, FONT_SIZE_NORMAL, false)
+
+            mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+            mPrinter?.appendPrnStr("\n", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        }
+
+        printBottomTextAgent()
+    }
+
+    fun printSummaryReport(headerModel: HeaderModel, summaryModel: SummaryModel) {
+        printHeader(headerModel)
+
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        mPrinter?.appendPrnStr(summaryModel.title, FONT_SIZE_NORMAL, AlignEnum.CENTER, false)
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+
+        for (bean in summaryModel.transactionList) {
+            mPrinter?.appendPrnStr(bean.transName, FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+
+            if (bean.total.equals("0")) {
+                mPrinter?.appendPrnStr("Amount", bean.total, FONT_SIZE_NORMAL, false)
+            }
+
+            mPrinter?.appendPrnStr("Count", bean.count, FONT_SIZE_NORMAL, false)
+            mPrinter?.appendPrnStr("\n", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        }
+
+        mPrinter?.appendPrnStr("Agent Start Amount", summaryModel.agentStartAmount, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Total Debit Amount", summaryModel.totalDebit, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Total Debit Count", summaryModel.totalDebitCount, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Total Credit Amount", summaryModel.totalCredit, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Total Credit Count", summaryModel.totalCreditCount, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Total Convenience \\n Fee by Cash", summaryModel.totalCashCharge, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("Total Convenience \\n Fee from Account", summaryModel.totalAccCharge, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("\n\n", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+        mPrinter?.appendPrnStr("Agent Balance", summaryModel.agentBalance, FONT_SIZE_NORMAL, false)
+        mPrinter?.appendPrnStr("--------------------------------", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
+
+        printBottomTextAgent()
+    }
 
     private fun printBottomTextCus() {
         mPrinter?.appendPrnStr("\n\n", FONT_SIZE_NORMAL, AlignEnum.LEFT, false)
@@ -423,6 +514,19 @@ class NexgoPrintUtils (activity: Activity, printer: Printer?, onPrintCompleteTas
             mActivity?.runOnUiThread {
                 printStatus(retCode)
             }
+        }
+    }
+
+    private fun printLongText(title: String, value: String?, mPrinter: Printer?) {
+        val maxLineLength = 15
+
+        if (value?.length!! <= maxLineLength) {
+            mPrinter?.appendPrnStr(title, value, FONT_SIZE_NORMAL, false)
+        } else {
+            val firstLine = value.substring(0, maxLineLength)
+            val secondLine = value.substring(maxLineLength)
+            mPrinter?.appendPrnStr(title, firstLine, FONT_SIZE_NORMAL, false)
+            mPrinter?.appendPrnStr(secondLine, FONT_SIZE_NORMAL, AlignEnum.RIGHT, false)
         }
     }
 

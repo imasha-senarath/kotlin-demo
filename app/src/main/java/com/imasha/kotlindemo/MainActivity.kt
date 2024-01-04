@@ -1,8 +1,9 @@
 package com.imasha.kotlindemo
 
-import android.graphics.Typeface
+import android.graphics.*
 import android.os.Build
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.widget.Button
 import android.widget.Toast
@@ -41,17 +42,44 @@ class MainActivity : AppCompatActivity() {
                 val saleModel = SaleModel("Sale Receipt", "787659", "Imasha Senarath", "Imasha", "Sale", "Rs. 500.00", "Rs. 10.00", "Rs. 510.00")
                 val voidModel = VoidModel("Void Transaction", "Cash Withdrawal", "17/07/2023", "787654","Rs. 2000.00")
                 val stopPaymentModel = StopPaymentModel("Card Stop Payment", "787659", "Imasha Senarath", "Card","764673", "Test", "Tangalle")
-                val leadModel = LeadModel("Lead Request", "Leasing", "Imasha Senarath", "879654346V","Matara")
+                val leadModel = LeadModel("Lead Request", "Leasing", "Imasha Senarath Imasha Senarath", "879654346V","Matara")
                 val chequeBookRequestModel = ChequeBookRequestModel("Cheque Book Request", "787659", "Imasha Senarath", "3","25 CR NOOR", "Hikkaduwa")
                 val cardPaymentModel = CardPaymentModel("Card Settlement by Cash", "7876775794659", "7864357", "Imasha Senarath","Rs. 500.00", "Rs. 30.00", "RS. 530.00")
+
+                val miniStatementModel = MiniStatementModel("Mini Statement", "7876775", "Imasha Senarath", arrayListOf<MiniTransactionModel>().apply {
+                    add(MiniTransactionModel("100.00", "500.00", "2023-12-22 10:30", "Credit", "Deposit"))
+                    add(MiniTransactionModel("50.00", "550.00", "2023-12-22 11:00", "Debit", "Withdrawal"))
+                })
+
+                val historyModel = HistoryModel("Transaction History", arrayListOf<HistoryTransactionModel>().apply {
+                    add(HistoryTransactionModel("TVOD", "Withdrawal", "500.00", "30.00", "6756546", "9756346", "865425", "", "2023-12-22 11:00"))
+                    add(HistoryTransactionModel("TVOD", "Deposit", "800.00", "30.00", "3756546", "9756346", "865425", "", "2023-12-22 11:00"))
+                })
+
+                val summaryModel = SummaryModel("Transaction Summary", "500.00", "2", "300.00", "2", "30.00", "400.00", "2000.00", "340.00",arrayListOf<SummaryTransactionModel>().apply {
+                    add(SummaryTransactionModel("Withdrawal", "340.00", "4"))
+                    add(SummaryTransactionModel("Deposit", "640.00", "2"))
+                })
 
                 NexgoPrintUtils(this, printer, object: NexgoPrintUtils.OnPrintCompleteTask {
                     override fun onPrintCompleted(isSuccess: Boolean, msg: String) {
                         Log.i("test66", "isSuccess: $isSuccess")
                         Log.i("test66", "msg: $msg")
                     }
-                }).printCashCardSettlement(headerModel, cardPaymentModel, true);
+                }).printReceipt(base64ToBitmap(""));
             }
+        }
+    }
+
+    private fun base64ToBitmap(base64String: String): Bitmap? {
+        return try {
+            val decodedBytes = Base64.decode(base64String, Base64.DEFAULT)
+            Log.i("test66", "Success base64ToBitmap");
+            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.i("test66", "Fail base64ToBitmap: $e")
+            null
         }
     }
 
