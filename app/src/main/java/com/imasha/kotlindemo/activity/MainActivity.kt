@@ -1,6 +1,8 @@
 package com.imasha.kotlindemo.activity
 
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.util.Base64
@@ -9,23 +11,38 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.imasha.kotlindemo.R
+import com.imasha.kotlindemo.dagger.Car
+import com.imasha.kotlindemo.dagger.CarComponent
+import com.imasha.kotlindemo.dagger.DaggerCarComponent
 import com.imasha.kotlindemo.nexgo.model.*
 import com.imasha.kotlindemo.nexgo.print.NexgoPrintUtils
 import com.nexgo.oaf.apiv3.APIProxy
 import com.nexgo.oaf.apiv3.DeviceEngine
 import com.nexgo.oaf.apiv3.device.printer.Printer
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
+
     private var deviceEngine: DeviceEngine? = null
     private var printer: Printer? = null
+
+    @set:Inject var car: Car? = null;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         nexgoFunctions();
+        daggerFunctions();
 
+    }
+
+    private fun daggerFunctions() {
+        val carComponent: CarComponent = DaggerCarComponent.create();
+        carComponent.inject(this);
+        //car = carComponent.getCar();
+        car?.drive();
     }
 
     private fun nexgoFunctions() {
