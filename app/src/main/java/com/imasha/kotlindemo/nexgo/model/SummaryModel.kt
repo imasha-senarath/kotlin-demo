@@ -1,4 +1,4 @@
-package com.imasha.kotlindemo.model
+package com.imasha.kotlindemo.nexgo.model
 
 import java.util.ArrayList
 
@@ -13,5 +13,5 @@ data class SummaryModel(
     var totalAccCharge: String?,
     var agentStartAmount: String?,
     var agentBalance: String?,
-    var transactionList: ArrayList<SummaryTransactionModel>
+    var transactionList: ArrayList<com.imasha.kotlindemo.nexgo.model.SummaryTransactionModel>
 )

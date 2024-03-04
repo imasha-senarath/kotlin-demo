@@ -1,10 +1,10 @@
-package com.imasha.kotlindemo.print
+package com.imasha.kotlindemo.nexgo.print
 
 import android.app.Activity
 import android.graphics.Bitmap
-import com.imasha.kotlindemo.model.*
 import com.nexgo.oaf.apiv3.device.printer.AlignEnum
 import com.nexgo.oaf.apiv3.device.printer.Printer
+import com.imasha.kotlindemo.nexgo.model.*
 
 
 class NexgoPrintUtils (activity: Activity, printer: Printer?, onPrintCompleteTask : OnPrintCompleteTask) {

@@ -1,11 +1,10 @@
-package com.imasha.kotlindemo.model
+package com.imasha.kotlindemo.nexgo.model
 
-data class SaleModel(
+data class CardPaymentModel(
     var title: String?,
+    var cardNumber: String?,
     var accNumber: String?,
     var accName: String?,
-    var salesOutlet: String?,
-    var remark: String?,
     var amount: String?,
     var convenienceFee: String?,
     var transactionAmount: String?

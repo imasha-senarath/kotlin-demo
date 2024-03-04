@@ -1,4 +1,4 @@
-package com.imasha.kotlindemo.model
+package com.imasha.kotlindemo.nexgo.model
 
 data class HeaderModel(
     val dateTime: String?,
