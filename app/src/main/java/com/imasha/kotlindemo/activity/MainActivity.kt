@@ -14,6 +14,7 @@ import com.imasha.kotlindemo.R
 import com.imasha.kotlindemo.dagger.Car
 import com.imasha.kotlindemo.dagger.CarComponent
 import com.imasha.kotlindemo.dagger.DaggerCarComponent
+import com.imasha.kotlindemo.databinding.ActivityMainBinding
 import com.imasha.kotlindemo.nexgo.model.*
 import com.imasha.kotlindemo.nexgo.print.NexgoPrintUtils
 import com.nexgo.oaf.apiv3.APIProxy
@@ -23,6 +24,7 @@ import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var  binding: ActivityMainBinding;
 
     private var deviceEngine: DeviceEngine? = null
     private var printer: Printer? = null
@@ -31,7 +33,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         nexgoFunctions();
         daggerFunctions();
@@ -49,8 +52,7 @@ class MainActivity : AppCompatActivity() {
         //Toast.makeText(this, "S/N: "+getSN(), Toast.LENGTH_SHORT).show()
         //Log.i("NEXGO", "S/N: "+getSN())
 
-        val printBtn: Button = findViewById(R.id.print)
-        printBtn.setOnClickListener {
+        binding.print.setOnClickListener {
             if (isNexgo()) {
                 initPrinter();
                 Toast.makeText(this, "Printing...", Toast.LENGTH_SHORT).show()
