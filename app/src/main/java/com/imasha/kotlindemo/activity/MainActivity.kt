@@ -7,10 +7,8 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
-import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.imasha.kotlindemo.R
 import com.imasha.kotlindemo.dagger.Car
 import com.imasha.kotlindemo.dagger.CarComponent
 import com.imasha.kotlindemo.dagger.DaggerCarComponent
@@ -37,8 +35,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         nexgoFunctions();
-        daggerFunctions();
 
+        daggerFunctions();
     }
 
     private fun daggerFunctions() {
@@ -49,11 +47,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun nexgoFunctions() {
-        //Toast.makeText(this, "S/N: "+getSN(), Toast.LENGTH_SHORT).show()
-        //Log.i("NEXGO", "S/N: "+getSN())
-
         binding.print.setOnClickListener {
             if (isNexgo()) {
+                Log.i("KOTLIN88", "S/N: "+getSN())
                 initPrinter();
                 Toast.makeText(this, "Printing...", Toast.LENGTH_SHORT).show()
 
